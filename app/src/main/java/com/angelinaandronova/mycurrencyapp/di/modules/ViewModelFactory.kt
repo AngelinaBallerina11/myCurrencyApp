@@ -1,4 +1,4 @@
-package com.angelinaandronova.myimagedownloadapplication.di.modules
+package com.angelinaandronova.mycurrencyapp.di.modules
 
 import android.arch.lifecycle.ViewModel
 import android.arch.lifecycle.ViewModelProvider

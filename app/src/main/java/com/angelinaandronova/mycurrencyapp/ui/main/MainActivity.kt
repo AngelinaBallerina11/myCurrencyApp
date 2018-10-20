@@ -1,8 +1,8 @@
-package com.angelinaandronova.mycurrencyapp
+package com.angelinaandronova.mycurrencyapp.ui.main
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import com.angelinaandronova.mycurrencyapp.ui.main.MainFragment
+import com.angelinaandronova.mycurrencyapp.R
 
 class MainActivity : AppCompatActivity() {
 

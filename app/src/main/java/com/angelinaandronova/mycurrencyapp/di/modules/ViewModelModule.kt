@@ -1,7 +1,9 @@
-package com.angelinaandronova.myimagedownloadapplication.di.modules
+package com.angelinaandronova.mycurrencyapp.di.modules
 
 import android.arch.lifecycle.ViewModel
 import android.arch.lifecycle.ViewModelProvider
+import com.angelinaandronova.mycurrencyapp.di.modules.ViewModelFactory
+import com.angelinaandronova.mycurrencyapp.di.modules.ViewModelKey
 import com.angelinaandronova.mycurrencyapp.ui.main.MainViewModel
 import dagger.Binds
 import dagger.Module

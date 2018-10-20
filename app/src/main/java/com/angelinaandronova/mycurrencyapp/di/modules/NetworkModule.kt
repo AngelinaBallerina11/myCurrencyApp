@@ -1,4 +1,4 @@
-package com.angelinaandronova.myimagedownloadapplication.di.modules
+package com.angelinaandronova.mycurrencyapp.di.modules
 
 import com.google.gson.FieldNamingPolicy
 import com.google.gson.Gson
@@ -13,7 +13,7 @@ import javax.inject.Singleton
 
 
 @Module
-open class NetworkModule(private var mBaseUrl: String) {
+open class NetworkModule {
 
     @Provides
     @Singleton
@@ -36,7 +36,6 @@ open class NetworkModule(private var mBaseUrl: String) {
     fun provideRetrofit(gson: Gson, okHttpClient: OkHttpClient): Retrofit {
         return Retrofit.Builder()
             .addConverterFactory(GsonConverterFactory.create(gson))
-            .baseUrl(mBaseUrl)
             .client(okHttpClient)
             .build()
     }

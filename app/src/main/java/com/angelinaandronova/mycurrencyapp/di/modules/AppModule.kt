@@ -1,4 +1,4 @@
-package com.angelinaandronova.myimagedownloadapplication.di.modules
+package com.angelinaandronova.mycurrencyapp.di.modules
 
 import android.app.Application
 import android.content.Context
