@@ -1,4 +1,4 @@
-package com.angelinaandronova.mycurrencyapp.network.model
+package com.angelinaandronova.mycurrencyapp.network.model.rates
 
 data class Rates(
     val currencyCode: String,

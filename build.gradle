@@ -27,6 +27,7 @@ task clean(type: Delete) {
 }
 
 project.ext {
+    glide                   = '4.8.0'
     rx_java_android         = '2.1.0'
     rx_kotlin               = '2.3.0'
     gson                    = '2.4.0'

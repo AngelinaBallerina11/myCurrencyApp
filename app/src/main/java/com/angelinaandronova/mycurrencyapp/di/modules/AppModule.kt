@@ -2,10 +2,11 @@ package com.angelinaandronova.mycurrencyapp.di.modules
 
 import android.app.Application
 import android.content.Context
+import com.angelinaandronova.mycurrencyapp.network.services.CurrencyDataService
+import com.angelinaandronova.mycurrencyapp.network.services.RatesService
 import com.angelinaandronova.mycurrencyapp.ui.main.MainRepository
 import dagger.Module
 import dagger.Provides
-import retrofit2.Retrofit
 import javax.inject.Singleton
 
 
@@ -20,6 +21,8 @@ class AppModule(private val application: Application) {
     internal fun provideContext(): Context = application.applicationContext
 
     @Provides
-    fun provideMainRepository(retrofit: Retrofit): MainRepository = MainRepository(retrofit)
+    fun provideMainRepository(ratesService: RatesService,
+                              currencyDataService: CurrencyDataService): MainRepository =
+        MainRepository(ratesService, currencyDataService)
 
 }

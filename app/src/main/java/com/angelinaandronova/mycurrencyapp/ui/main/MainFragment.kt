@@ -39,16 +39,7 @@ class MainFragment : Fragment() {
         MyApplication.component.inject(this)
         viewModel = ViewModelProviders.of(activity!!, viewModelFactory).get(MainViewModel::class.java)
 
-        val list = listOf("Alpha", "Beta", "Gamma", "Delta", "Epsilon")
 
-        ObservableRepeat.interval(1, TimeUnit.SECONDS)
-            .timeInterval()
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribeBy(  // named arguments for lambda Subscribers
-                onNext = { showToast(list[Random().nextInt(list.size)]) },
-                onError = { showToast(it.localizedMessage) },
-                onComplete = { showToast("Done!") }
-            )
 
     }
 
