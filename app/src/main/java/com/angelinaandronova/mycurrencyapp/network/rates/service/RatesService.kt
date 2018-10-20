@@ -1,4 +1,4 @@
-package com.angelinaandronova.mycurrencyapp.network.services
+package com.angelinaandronova.mycurrencyapp.network.rates.service
 
 import retrofit2.http.GET
 

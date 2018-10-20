@@ -1,6 +1,6 @@
-package com.angelinaandronova.mycurrencyapp.network.services
+package com.angelinaandronova.mycurrencyapp.network.currencyMetaData.service
 
-import com.angelinaandronova.mycurrencyapp.network.model.images.CurrencyDataResponse
+import com.angelinaandronova.mycurrencyapp.network.currencyMetaData.model.CurrencyDataResponse
 import io.reactivex.Observable
 import retrofit2.http.GET
 import retrofit2.http.Path

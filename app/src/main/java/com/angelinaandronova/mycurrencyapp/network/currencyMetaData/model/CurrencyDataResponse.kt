@@ -1,4 +1,4 @@
-package com.angelinaandronova.mycurrencyapp.network.model.images
+package com.angelinaandronova.mycurrencyapp.network.currencyMetaData.model
 
 
 data class CurrencyDataResponse(

@@ -1,7 +1,7 @@
 package com.angelinaandronova.mycurrencyapp.di.modules
 
-import com.angelinaandronova.mycurrencyapp.network.services.CurrencyDataService
-import com.angelinaandronova.mycurrencyapp.network.services.RatesService
+import com.angelinaandronova.mycurrencyapp.network.currencyMetaData.service.CurrencyDataService
+import com.angelinaandronova.mycurrencyapp.network.rates.service.RatesService
 import com.google.gson.FieldNamingPolicy
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
