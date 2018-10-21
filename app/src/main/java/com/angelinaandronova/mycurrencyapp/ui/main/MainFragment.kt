@@ -39,8 +39,11 @@ class MainFragment : Fragment() {
         viewModel.currencyData.observe(this, android.arch.lifecycle.Observer { currencies ->
             currencies?.let {
                 adapter?.run {
-                    items.clear()
-                    items.addAll(it)
+                    if (items.isEmpty()) {
+                        items.addAll(it)
+                    } else {
+                        addRates(it)
+                    }
                     notifyDataSetChanged()
                 }
             }

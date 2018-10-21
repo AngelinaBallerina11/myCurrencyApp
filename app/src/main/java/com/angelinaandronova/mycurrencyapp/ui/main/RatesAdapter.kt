@@ -1,6 +1,7 @@
 package com.angelinaandronova.mycurrencyapp.ui.main
 
 import android.content.Context
+import android.support.constraint.ConstraintLayout
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -26,6 +27,7 @@ class RatesAdapter(val context: Context, val items: ArrayList<CurrencyData>) : R
         )
     }
 
+
     override fun getItemCount(): Int = items.size
 
     override fun onBindViewHolder(holder: RatesViewHolder, position: Int) {
@@ -40,6 +42,20 @@ class RatesAdapter(val context: Context, val items: ArrayList<CurrencyData>) : R
         holder.code.text = currentItem.code
         holder.currencyFullName.text = getCurrencyNameFromCode(currentItem.code)
         holder.rate.setText(currentItem.exchangeRate.toString())
+        holder.container.setOnClickListener {
+            val first = items[0]
+            items[0] = currentItem
+            items[position] = first
+            notifyDataSetChanged()
+        }
+    }
+
+    fun addRates(newItems: ArrayList<CurrencyData>) {
+        items.forEach { listItem ->
+            newItems.forEach {
+                if (listItem.code == it.code) listItem.exchangeRate = it.exchangeRate
+            }
+        }
     }
 
     private fun getImageUrl(item: CurrencyData): String? {
@@ -62,6 +78,7 @@ class RatesAdapter(val context: Context, val items: ArrayList<CurrencyData>) : R
 }
 
 class RatesViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    val container: ConstraintLayout = view.container
     val flagImage: ImageView = view.imageView_country_flag
     val code: TextView = view.textView_currency_code
     val currencyFullName: TextView = view.textView_currency_full_text
