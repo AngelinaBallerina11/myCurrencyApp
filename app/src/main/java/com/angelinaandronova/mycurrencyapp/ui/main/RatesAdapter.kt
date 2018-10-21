@@ -24,7 +24,6 @@ import kotlinx.coroutines.experimental.GlobalScope
 import kotlinx.coroutines.experimental.delay
 import kotlinx.coroutines.experimental.launch
 import java.util.*
-import java.util.concurrent.TimeUnit
 
 
 class RatesAdapter(val context: Context, val items: ArrayList<CurrencyData>, val clickListener: RatesClickListener) :
@@ -33,6 +32,7 @@ class RatesAdapter(val context: Context, val items: ArrayList<CurrencyData>, val
     companion object {
         const val STRING_RESOURCE = "string"
         const val EURO_DEFAULT_VALUE = 1.0
+        const val TWO_DECIMAL_NUMBERS = "%.2f"
     }
 
     var editMode = false
@@ -40,7 +40,7 @@ class RatesAdapter(val context: Context, val items: ArrayList<CurrencyData>, val
             if (value) {
                 field = true
                 GlobalScope.launch {
-                    delay(5000)
+                    delay(5000) /* edit mode can be set max to 5 seconds */
                     field = false
                 }
             } else {
@@ -70,13 +70,10 @@ class RatesAdapter(val context: Context, val items: ArrayList<CurrencyData>, val
             .into(holder.flagImage)
         holder.code.text = currentItem.code
         holder.currencyFullName.text = getCurrencyNameFromCode(currentItem.code)
-        holder.rate.setText("%.2f".format(getCurrentLocale(), currentItem.exchangeRate))
+        holder.rate.setText(TWO_DECIMAL_NUMBERS.format(getCurrentLocale(), currentItem.exchangeRate))
         holder.container.setOnClickListener {
             if (position > 0) {
-                val first = items[0]
-                items[0] = currentItem
-                items[position] = first
-                notifyDataSetChanged()
+                reorder(currentItem, position)
             }
             holder.rate.requestFocus()
             holder.rate.setSelection(holder.rate.text.length)
@@ -128,10 +125,19 @@ class RatesAdapter(val context: Context, val items: ArrayList<CurrencyData>, val
         }
     }
 
+    private fun reorder(currentItem: CurrencyData, position: Int) {
+        val topList = items.subList(0, position)
+        val bottomList = items.subList(position + 1, items.size)
+        val newList = listOf(currentItem) + topList + bottomList
+        items.clear()
+        items.addAll(newList)
+        notifyDataSetChanged()
+    }
+
     private fun getCurrentLocale(): Locale {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N){
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             context.resources.configuration.locales.get(0);
-        } else{
+        } else {
             context.resources.configuration.locale;
         }
     }
@@ -147,8 +153,10 @@ class RatesAdapter(val context: Context, val items: ArrayList<CurrencyData>, val
                 items[0].exchangeRate = enteredNumber.toString().toDouble()
             }
         }
+
         override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
         }
+
         override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
         }
     }

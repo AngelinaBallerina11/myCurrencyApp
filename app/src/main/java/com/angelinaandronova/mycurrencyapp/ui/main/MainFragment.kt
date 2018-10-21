@@ -38,6 +38,7 @@ class MainFragment : Fragment(), RatesClickListener {
         viewModel = ViewModelProviders.of(activity!!, viewModelFactory).get(MainViewModel::class.java)
         viewModel.currencyData.observe(this, android.arch.lifecycle.Observer { currencies ->
             currencies?.let {
+                progress_bar.visibility = View.GONE
                 adapter?.run {
                     when {
                         items.isEmpty() -> addInitialSet(it)
@@ -51,13 +52,10 @@ class MainFragment : Fragment(), RatesClickListener {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        progress_bar.visibility = View.VISIBLE
         adapter = RatesAdapter(activity!!, arrayListOf(), this)
         recyclerview.adapter = adapter
         recyclerview.layoutManager = LinearLayoutManager(activity)
-    }
-
-    private fun showToast(msg: String) {
-        Toast.makeText(activity!!, msg, Toast.LENGTH_SHORT).show()
     }
 
     override fun onItemClicked() {

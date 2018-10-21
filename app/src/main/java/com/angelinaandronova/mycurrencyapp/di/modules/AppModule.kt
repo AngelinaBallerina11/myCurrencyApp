@@ -2,7 +2,6 @@ package com.angelinaandronova.mycurrencyapp.di.modules
 
 import android.app.Application
 import android.content.Context
-import com.angelinaandronova.mycurrencyapp.network.currencyMetaData.service.CurrencyDataService
 import com.angelinaandronova.mycurrencyapp.network.rates.service.RatesService
 import com.angelinaandronova.mycurrencyapp.ui.main.MainRepository
 import dagger.Module
@@ -21,9 +20,7 @@ class AppModule(private val application: Application) {
     internal fun provideContext(): Context = application.applicationContext
 
     @Provides
-    fun provideMainRepository(ratesService: RatesService,
-                              currencyDataService: CurrencyDataService
-    ): MainRepository =
-        MainRepository(ratesService, currencyDataService)
+    fun provideMainRepository(ratesService: RatesService): MainRepository =
+        MainRepository(ratesService)
 
 }

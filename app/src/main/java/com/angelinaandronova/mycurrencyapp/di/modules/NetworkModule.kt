@@ -1,6 +1,5 @@
 package com.angelinaandronova.mycurrencyapp.di.modules
 
-import com.angelinaandronova.mycurrencyapp.network.currencyMetaData.service.CurrencyDataService
 import com.angelinaandronova.mycurrencyapp.network.rates.service.RatesService
 import com.google.gson.FieldNamingPolicy
 import com.google.gson.Gson
@@ -20,7 +19,6 @@ open class NetworkModule {
 
     companion object {
         const val BASE_URL_REVOLUT = "https://revolut.duckdns.org"
-        const val BASE_URL_IMAGES = "https://restcountries.eu/rest/"
     }
 
     @Provides
@@ -49,17 +47,5 @@ open class NetworkModule {
             .baseUrl(BASE_URL_REVOLUT)
             .build()
             .create(RatesService::class.java)
-    }
-
-    @Provides
-    @Singleton
-    fun provideImagesService(gson: Gson, okHttpClient: OkHttpClient): CurrencyDataService {
-        return Retrofit.Builder()
-            .addConverterFactory(GsonConverterFactory.create(gson))
-            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-            .client(okHttpClient)
-            .baseUrl(BASE_URL_IMAGES)
-            .build()
-            .create(CurrencyDataService::class.java)
     }
 }
