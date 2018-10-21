@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">My Currency Converter</string>
     <string name="AUD">Australian dollar</string>
+    <string name="EUR">Euro</string>
     <string name="BGN">Bulgarian lev</string>
     <string name="BRL">Brazilian Real</string>
     <string name="CAD">Canadian dollar</string>

@@ -18,6 +18,7 @@ class RatesAdapter(val context: Context, val items: ArrayList<CurrencyData>) : R
 
     companion object {
         const val STRING_RESOURCE = "string"
+        const val EURO_DEFAULT_VALUE = 1.0
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RatesViewHolder {
@@ -48,6 +49,12 @@ class RatesAdapter(val context: Context, val items: ArrayList<CurrencyData>) : R
             items[position] = first
             notifyDataSetChanged()
         }
+    }
+
+    fun addInitialSet(newItems: ArrayList<CurrencyData>) {
+        items.clear()
+        items.add(CurrencyData(Currency.EUR.name, EURO_DEFAULT_VALUE))
+        items.addAll(newItems)
     }
 
     fun addRates(newItems: ArrayList<CurrencyData>) {

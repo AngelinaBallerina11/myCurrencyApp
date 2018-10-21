@@ -40,7 +40,7 @@ class MainFragment : Fragment() {
             currencies?.let {
                 adapter?.run {
                     if (items.isEmpty()) {
-                        items.addAll(it)
+                        addInitialSet(it)
                     } else {
                         addRates(it)
                     }
