@@ -15,6 +15,10 @@ import kotlinx.android.synthetic.main.list_item_currency.view.*
 
 class RatesAdapter(val context: Context, val items: ArrayList<CurrencyData>) : RecyclerView.Adapter<RatesViewHolder>() {
 
+    companion object {
+        const val STRING_RESOURCE = "string"
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RatesViewHolder {
         return RatesViewHolder(
             LayoutInflater.from(context)
@@ -34,7 +38,7 @@ class RatesAdapter(val context: Context, val items: ArrayList<CurrencyData>) : R
             .centerCrop()
             .into(holder.flagImage)
         holder.code.text = currentItem.code
-        holder.currencyFullName.text = context.resources.getString(context.resources.getIdentifier(currentItem.code, "string", context.packageName))
+        holder.currencyFullName.text = getCurrencyNameFromCode(currentItem.code)
         holder.rate.setText(currentItem.exchangeRate.toString())
     }
 
@@ -49,6 +53,10 @@ class RatesAdapter(val context: Context, val items: ArrayList<CurrencyData>) : R
             return Currency.values().firstOrNull { it.name == item.code }?.countryFlagCode?.toLowerCase()
         }
         return null
+    }
+
+    private fun getCurrencyNameFromCode(code: String): String {
+        return context.resources.getString(context.resources.getIdentifier(code, STRING_RESOURCE, context.packageName))
     }
 
 }
