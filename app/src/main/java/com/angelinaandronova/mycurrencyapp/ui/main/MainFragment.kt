@@ -14,7 +14,7 @@ import com.angelinaandronova.mycurrencyapp.di.modules.ViewModelFactory
 import kotlinx.android.synthetic.main.main_fragment.*
 import javax.inject.Inject
 
-class MainFragment : Fragment() {
+class MainFragment : Fragment(), RatesClickListener {
 
     companion object {
         fun newInstance() = MainFragment()
@@ -39,12 +39,10 @@ class MainFragment : Fragment() {
         viewModel.currencyData.observe(this, android.arch.lifecycle.Observer { currencies ->
             currencies?.let {
                 adapter?.run {
-                    if (items.isEmpty()) {
-                        addInitialSet(it)
-                    } else {
-                        addRates(it)
+                    when {
+                        items.isEmpty() -> addInitialSet(it)
+                        !editMode -> addRates(it)
                     }
-                    notifyDataSetChanged()
                 }
             }
         })
@@ -53,13 +51,17 @@ class MainFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        adapter = RatesAdapter(activity!!, arrayListOf<CurrencyData>())
+        adapter = RatesAdapter(activity!!, arrayListOf(), this)
         recyclerview.adapter = adapter
         recyclerview.layoutManager = LinearLayoutManager(activity)
     }
 
     private fun showToast(msg: String) {
         Toast.makeText(activity!!, msg, Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onItemClicked() {
+        recyclerview.smoothScrollToPosition(0)
     }
 
 }

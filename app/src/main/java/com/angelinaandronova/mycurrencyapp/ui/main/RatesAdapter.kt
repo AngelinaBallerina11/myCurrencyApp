@@ -1,11 +1,18 @@
 package com.angelinaandronova.mycurrencyapp.ui.main
 
 import android.content.Context
+import android.os.Build
 import android.support.constraint.ConstraintLayout
 import android.support.v7.widget.RecyclerView
+import android.text.Editable
+import android.text.TextWatcher
+import android.util.Log
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
@@ -13,14 +20,34 @@ import com.angelinaandronova.mycurrencyapp.R
 import com.angelinaandronova.mycurrencyapp.network.rates.model.Currency
 import com.angelinaandronova.mycurrencyapp.utils.GlideApp
 import kotlinx.android.synthetic.main.list_item_currency.view.*
+import kotlinx.coroutines.experimental.GlobalScope
+import kotlinx.coroutines.experimental.delay
+import kotlinx.coroutines.experimental.launch
+import java.util.*
+import java.util.concurrent.TimeUnit
 
-class RatesAdapter(val context: Context, val items: ArrayList<CurrencyData>) :
+
+class RatesAdapter(val context: Context, val items: ArrayList<CurrencyData>, val clickListener: RatesClickListener) :
     RecyclerView.Adapter<RatesAdapter.RatesViewHolder>() {
 
     companion object {
         const val STRING_RESOURCE = "string"
         const val EURO_DEFAULT_VALUE = 1.0
     }
+
+    var editMode = false
+        set(value) {
+            if (value) {
+                field = true
+                GlobalScope.launch {
+                    delay(5000)
+                    field = false
+                }
+            } else {
+                field = false
+            }
+
+        }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RatesViewHolder {
         return RatesViewHolder(
@@ -29,10 +56,10 @@ class RatesAdapter(val context: Context, val items: ArrayList<CurrencyData>) :
         )
     }
 
-
     override fun getItemCount(): Int = items.size
 
     override fun onBindViewHolder(holder: RatesViewHolder, position: Int) {
+        holder.rate.removeTextChangedListener(textWatcher)
         val currentItem = items[position]
 
         GlideApp
@@ -43,21 +70,86 @@ class RatesAdapter(val context: Context, val items: ArrayList<CurrencyData>) :
             .into(holder.flagImage)
         holder.code.text = currentItem.code
         holder.currencyFullName.text = getCurrencyNameFromCode(currentItem.code)
-        holder.rate.setText(currentItem.exchangeRate.toString())
+        holder.rate.setText("%.2f".format(getCurrentLocale(), currentItem.exchangeRate))
         holder.container.setOnClickListener {
-            val first = items[0]
-            items[0] = currentItem
-            items[position] = first
-            notifyDataSetChanged()
+            if (position > 0) {
+                val first = items[0]
+                items[0] = currentItem
+                items[position] = first
+                notifyDataSetChanged()
+            }
+            holder.rate.requestFocus()
+            holder.rate.setSelection(holder.rate.text.length)
+            clickListener.onItemClicked()
         }
+
         if (position == 0) {
+            holder.rate.isCursorVisible = true
             holder.rate.isClickable = true
             holder.rate.isFocusable = true
             holder.rate.isFocusableInTouchMode = true
             holder.rate.requestFocus()
+            holder.rate.setSelection(holder.rate.text.length)
+            holder.rate.addTextChangedListener(textWatcher)
+            holder.rate.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus ->
+                if (hasFocus) {
+                    Log.i("TESTING", "hasFocus")
+                    showKeyboard(v as EditText)
+                    editMode = true
+                }
+            }
+            holder.rate.setOnEditorActionListener { v, actionId, event ->
+                if (actionId == EditorInfo.IME_ACTION_SEARCH ||
+                    actionId == EditorInfo.IME_ACTION_DONE ||
+                    actionId == EditorInfo.IME_ACTION_NEXT ||
+                    (event != null &&
+                            event.action == KeyEvent.ACTION_DOWN &&
+                            event.keyCode == KeyEvent.KEYCODE_ENTER)
+                ) {
+                    if (event == null || !event.isShiftPressed) {
+                        editMode = false
+                        holder.rate.clearFocus()
+                        true
+                    }
+                }
+                false
+            }
+            holder.rate.setOnClickListener {
+                editMode = true
+                holder.rate.text.clear()
+            }
         } else {
+            holder.rate.isCursorVisible = false
             holder.rate.isClickable = false
             holder.rate.isFocusable = false
+            holder.rate.isFocusableInTouchMode = false
+            holder.rate.removeTextChangedListener(textWatcher)
+            holder.rate.onFocusChangeListener = null
+        }
+    }
+
+    private fun getCurrentLocale(): Locale {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N){
+            context.resources.configuration.locales.get(0);
+        } else{
+            context.resources.configuration.locale;
+        }
+    }
+
+    private fun showKeyboard(editText: EditText) {
+        val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
+        imm!!.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT)
+    }
+
+    private val textWatcher = object : TextWatcher {
+        override fun afterTextChanged(enteredNumber: Editable?) {
+            if (!enteredNumber.isNullOrEmpty()) {
+                items[0].exchangeRate = enteredNumber.toString().toDouble()
+            }
+        }
+        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+        }
+        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
         }
     }
 
@@ -65,14 +157,28 @@ class RatesAdapter(val context: Context, val items: ArrayList<CurrencyData>) :
         items.clear()
         items.add(CurrencyData(Currency.EUR.name, EURO_DEFAULT_VALUE))
         items.addAll(newItems)
+        notifyDataSetChanged()
     }
 
     fun addRates(newItems: ArrayList<CurrencyData>) {
-        items.forEach { listItem ->
-            newItems.forEach {
-                if (listItem.code == it.code) listItem.exchangeRate = it.exchangeRate
+        GlobalScope.launch {
+            var factor = 1.0
+            items.forEach {
+                newItems.forEach {
+                    if (items[0].code == it.code) factor = items[0].exchangeRate!! / it.exchangeRate!!
+                    if (items[0].code == Currency.EUR.name) factor = items[0].exchangeRate!! / EURO_DEFAULT_VALUE
+                }
+            }
+            items.forEach { listItem ->
+                newItems.forEach {
+                    if (listItem.code == it.code && listItem.code != items[0].code) listItem.exchangeRate =
+                            (it.exchangeRate!! * factor)
+                    if (listItem.code == Currency.EUR.name && listItem.code != items[0].code) listItem.exchangeRate =
+                            (EURO_DEFAULT_VALUE * factor)
+                }
             }
         }
+        notifyDataSetChanged()
     }
 
     private fun getImageUrl(item: CurrencyData): String? {
@@ -100,6 +206,10 @@ class RatesAdapter(val context: Context, val items: ArrayList<CurrencyData>) :
         val rate: EditText = view.editText_rate
     }
 
+}
+
+interface RatesClickListener {
+    fun onItemClicked()
 }
 
 
