@@ -27,7 +27,7 @@ open class NetworkModule {
     @Singleton
     fun provideGson(): Gson {
         val gsonBuilder = GsonBuilder()
-        gsonBuilder.setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+        gsonBuilder.setFieldNamingPolicy(FieldNamingPolicy.IDENTITY)
         return gsonBuilder.create()
     }
 

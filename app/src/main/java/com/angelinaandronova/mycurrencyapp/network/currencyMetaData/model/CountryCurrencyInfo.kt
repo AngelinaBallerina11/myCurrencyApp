@@ -1,7 +1,7 @@
 package com.angelinaandronova.mycurrencyapp.network.currencyMetaData.model
 
 
-data class CurrencyDataResponse(
+data class CountryCurrencyInfo(
     val name: String,
     val topLevelDomain: List<String>,
     val alpha2Code: String,

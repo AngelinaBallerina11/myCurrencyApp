@@ -3,6 +3,7 @@ package com.angelinaandronova.mycurrencyapp.ui.main
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,11 +11,7 @@ import android.widget.Toast
 import com.angelinaandronova.mycurrencyapp.MyApplication
 import com.angelinaandronova.mycurrencyapp.R
 import com.angelinaandronova.mycurrencyapp.di.modules.ViewModelFactory
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.internal.operators.observable.ObservableRepeat
-import io.reactivex.rxkotlin.subscribeBy
-import java.util.*
-import java.util.concurrent.TimeUnit
+import kotlinx.android.synthetic.main.main_fragment.*
 import javax.inject.Inject
 
 class MainFragment : Fragment() {
@@ -26,6 +23,7 @@ class MainFragment : Fragment() {
     private lateinit var viewModel: MainViewModel
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
+    lateinit var adapter: RatesAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -38,9 +36,23 @@ class MainFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
         MyApplication.component.inject(this)
         viewModel = ViewModelProviders.of(activity!!, viewModelFactory).get(MainViewModel::class.java)
+        viewModel.currencyData.observe(this, android.arch.lifecycle.Observer { currencies ->
+            currencies?.let {
+                adapter?.run {
+                    items.clear()
+                    items.addAll(it)
+                    notifyDataSetChanged()
+                }
+            }
+        })
 
 
+    }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        adapter = RatesAdapter(activity!!, arrayListOf<CurrencyData>())
+        recyclerview.adapter = adapter
+        recyclerview.layoutManager = LinearLayoutManager(activity)
     }
 
     private fun showToast(msg: String) {
