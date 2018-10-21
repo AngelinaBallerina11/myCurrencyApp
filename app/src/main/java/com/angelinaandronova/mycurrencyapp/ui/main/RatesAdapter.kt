@@ -14,7 +14,8 @@ import com.angelinaandronova.mycurrencyapp.network.rates.model.Currency
 import com.angelinaandronova.mycurrencyapp.utils.GlideApp
 import kotlinx.android.synthetic.main.list_item_currency.view.*
 
-class RatesAdapter(val context: Context, val items: ArrayList<CurrencyData>) : RecyclerView.Adapter<RatesViewHolder>() {
+class RatesAdapter(val context: Context, val items: ArrayList<CurrencyData>) :
+    RecyclerView.Adapter<RatesAdapter.RatesViewHolder>() {
 
     companion object {
         const val STRING_RESOURCE = "string"
@@ -49,6 +50,15 @@ class RatesAdapter(val context: Context, val items: ArrayList<CurrencyData>) : R
             items[position] = first
             notifyDataSetChanged()
         }
+        if (position == 0) {
+            holder.rate.isClickable = true
+            holder.rate.isFocusable = true
+            holder.rate.isFocusableInTouchMode = true
+            holder.rate.requestFocus()
+        } else {
+            holder.rate.isClickable = false
+            holder.rate.isFocusable = false
+        }
     }
 
     fun addInitialSet(newItems: ArrayList<CurrencyData>) {
@@ -82,13 +92,15 @@ class RatesAdapter(val context: Context, val items: ArrayList<CurrencyData>) : R
         return context.resources.getString(context.resources.getIdentifier(code, STRING_RESOURCE, context.packageName))
     }
 
+    class RatesViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val container: ConstraintLayout = view.container
+        val flagImage: ImageView = view.imageView_country_flag
+        val code: TextView = view.textView_currency_code
+        val currencyFullName: TextView = view.textView_currency_full_text
+        val rate: EditText = view.editText_rate
+    }
+
 }
 
-class RatesViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-    val container: ConstraintLayout = view.container
-    val flagImage: ImageView = view.imageView_country_flag
-    val code: TextView = view.textView_currency_code
-    val currencyFullName: TextView = view.textView_currency_full_text
-    val rate: EditText = view.editText_rate
-}
+
 
