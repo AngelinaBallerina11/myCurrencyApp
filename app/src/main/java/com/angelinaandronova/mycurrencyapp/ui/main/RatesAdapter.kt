@@ -1,8 +1,10 @@
 package com.angelinaandronova.mycurrencyapp.ui.main
 
+import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.os.Build
 import android.support.constraint.ConstraintLayout
+import android.support.v4.app.FragmentActivity
 import android.support.v7.widget.RecyclerView
 import android.text.Editable
 import android.text.TextWatcher
@@ -16,14 +18,16 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
+import com.angelinaandronova.mycurrencyapp.MyApplication
 import com.angelinaandronova.mycurrencyapp.R
+import com.angelinaandronova.mycurrencyapp.di.modules.ViewModelFactory
 import com.angelinaandronova.mycurrencyapp.network.rates.model.Currency
 import com.angelinaandronova.mycurrencyapp.utils.GlideApp
 import kotlinx.android.synthetic.main.list_item_currency.view.*
 import kotlinx.coroutines.experimental.GlobalScope
-import kotlinx.coroutines.experimental.delay
 import kotlinx.coroutines.experimental.launch
 import java.util.*
+import javax.inject.Inject
 
 
 class RatesAdapter(val context: Context, val items: ArrayList<CurrencyData>, val clickListener: RatesClickListener) :
@@ -35,19 +39,15 @@ class RatesAdapter(val context: Context, val items: ArrayList<CurrencyData>, val
         const val TWO_DECIMAL_NUMBERS = "%.2f"
     }
 
-    var editMode = false
-        set(value) {
-            if (value) {
-                field = true
-                GlobalScope.launch {
-                    delay(5000) /* edit mode can be set max to 5 seconds */
-                    field = false
-                }
-            } else {
-                field = false
-            }
+    private var viewModel: MainViewModel
+    @Inject
+    lateinit var viewModelFactory: ViewModelFactory
 
-        }
+    init {
+        MyApplication.component.inject(this)
+        viewModel = ViewModelProviders.of(context as FragmentActivity, viewModelFactory).get(MainViewModel::class.java)
+    }
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RatesViewHolder {
         return RatesViewHolder(
@@ -92,7 +92,6 @@ class RatesAdapter(val context: Context, val items: ArrayList<CurrencyData>, val
                 if (hasFocus) {
                     Log.i("TESTING", "hasFocus")
                     showKeyboard(v as EditText)
-                    editMode = true
                 }
             }
             holder.rate.setOnEditorActionListener { v, actionId, event ->
@@ -104,15 +103,16 @@ class RatesAdapter(val context: Context, val items: ArrayList<CurrencyData>, val
                             event.keyCode == KeyEvent.KEYCODE_ENTER)
                 ) {
                     if (event == null || !event.isShiftPressed) {
-                        editMode = false
+                        viewModel.editMode = false
                         holder.rate.clearFocus()
+                        hideKeyboard(holder.rate)
                         true
                     }
                 }
                 false
             }
             holder.rate.setOnClickListener {
-                editMode = true
+                viewModel.editMode = true
                 holder.rate.text.clear()
             }
         } else {
@@ -144,7 +144,12 @@ class RatesAdapter(val context: Context, val items: ArrayList<CurrencyData>, val
 
     private fun showKeyboard(editText: EditText) {
         val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
-        imm!!.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT)
+        imm?.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT)
+    }
+
+    private fun hideKeyboard(editText: EditText) {
+        val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
+        imm?.hideSoftInputFromWindow(editText.windowToken, 0)
     }
 
     private val textWatcher = object : TextWatcher {
@@ -171,7 +176,7 @@ class RatesAdapter(val context: Context, val items: ArrayList<CurrencyData>, val
     fun addRates(newItems: ArrayList<CurrencyData>) {
         GlobalScope.launch {
             var factor = 1.0
-            items.forEach {
+            items.forEach { _ ->
                 newItems.forEach {
                     if (items[0].code == it.code) factor = items[0].exchangeRate!! / it.exchangeRate!!
                     if (items[0].code == Currency.EUR.name) factor = items[0].exchangeRate!! / EURO_DEFAULT_VALUE

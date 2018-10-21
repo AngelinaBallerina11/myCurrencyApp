@@ -5,6 +5,9 @@ import android.arch.lifecycle.ViewModel
 import io.reactivex.Observable
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.experimental.GlobalScope
+import kotlinx.coroutines.experimental.delay
+import kotlinx.coroutines.experimental.launch
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -35,7 +38,22 @@ class MainViewModel @Inject constructor(private val mainRepo: MainRepository) : 
             )
     }
 
+    var editMode = false
+        set(value) {
+            if (value) {
+                field = true
+                GlobalScope.launch {
+                    delay(5000) /* edit mode can be set max to 5 seconds */
+                    field = false
+                }
+            } else {
+                field = false
+            }
 
+        }
+
+
+    var items: java.util.ArrayList<CurrencyData> = arrayListOf()
 }
 
 data class CurrencyData(val code: String, var exchangeRate: Double? = null) {

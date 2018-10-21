@@ -4,6 +4,7 @@ import com.angelinaandronova.mycurrencyapp.ui.main.MainFragment
 import com.angelinaandronova.mycurrencyapp.di.modules.AppModule
 import com.angelinaandronova.mycurrencyapp.di.modules.NetworkModule
 import com.angelinaandronova.mycurrencyapp.di.modules.ViewModelModule
+import com.angelinaandronova.mycurrencyapp.ui.main.RatesAdapter
 import dagger.Component
 import javax.inject.Singleton
 
@@ -12,4 +13,5 @@ import javax.inject.Singleton
 interface AppComponent {
 
     fun inject(mainFragment: MainFragment)
+    fun inject(adapter: RatesAdapter)
 }

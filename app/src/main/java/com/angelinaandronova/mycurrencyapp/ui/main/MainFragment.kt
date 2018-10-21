@@ -7,7 +7,6 @@ import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import com.angelinaandronova.mycurrencyapp.MyApplication
 import com.angelinaandronova.mycurrencyapp.R
 import com.angelinaandronova.mycurrencyapp.di.modules.ViewModelFactory
@@ -32,8 +31,8 @@ class MainFragment : Fragment(), RatesClickListener {
         return inflater.inflate(R.layout.main_fragment, container, false)
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         MyApplication.component.inject(this)
         viewModel = ViewModelProviders.of(activity!!, viewModelFactory).get(MainViewModel::class.java)
         viewModel.currencyData.observe(this, android.arch.lifecycle.Observer { currencies ->
@@ -41,25 +40,28 @@ class MainFragment : Fragment(), RatesClickListener {
                 progress_bar.visibility = View.GONE
                 adapter?.run {
                     when {
-                        items.isEmpty() -> addInitialSet(it)
-                        !editMode -> addRates(it)
+                        items.isEmpty() && viewModel.items.isEmpty() -> addInitialSet(it)
+                        !viewModel.editMode -> addRates(it)
                     }
                 }
             }
         })
-
-
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         progress_bar.visibility = View.VISIBLE
-        adapter = RatesAdapter(activity!!, arrayListOf(), this)
+        adapter = RatesAdapter(activity!!, viewModel.items, this)
         recyclerview.adapter = adapter
         recyclerview.layoutManager = LinearLayoutManager(activity)
     }
 
     override fun onItemClicked() {
         recyclerview.smoothScrollToPosition(0)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        viewModel.items = adapter.items
     }
 
 }
