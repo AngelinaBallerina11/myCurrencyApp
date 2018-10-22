@@ -170,6 +170,7 @@ class RatesAdapter(val context: Context, val items: ArrayList<CurrencyData>, val
         }
 
         override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            viewModel.editMode = true
         }
     }
 
