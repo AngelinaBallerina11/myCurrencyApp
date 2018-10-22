@@ -11,15 +11,15 @@
         android:background="@drawable/custom_item_ripple_effect">
 
     <ImageView
-            android:layout_width="70dp"
-            android:layout_height="50dp"
+            android:layout_width="@dimen/flag_width"
+            android:layout_height="@dimen/flag_heigh"
             app:srcCompat="@android:drawable/stat_notify_sync"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginTop="16dp"
-            android:layout_marginStart="16dp"
+            android:layout_marginTop="@dimen/margin_default"
+            android:layout_marginStart="@dimen/margin_default"
             android:id="@+id/imageView_country_flag"
-            android:layout_marginBottom="8dp"
+            android:layout_marginBottom="@dimen/margin_small"
             app:layout_constraintBottom_toBottomOf="parent"/>
     <TextView
             android:layout_width="wrap_content"
@@ -28,22 +28,22 @@
             android:textStyle="bold"
             android:id="@+id/textView_currency_code"
             app:layout_constraintStart_toEndOf="@+id/imageView_country_flag"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="@dimen/margin_default"
             app:layout_constraintTop_toTopOf="@+id/imageView_country_flag"
             app:layout_constraintBottom_toTopOf="@+id/textView_currency_full_text"
-            android:textSize="18sp"/>
+            android:textSize="@dimen/text_size_currency_code"/>
     <TextView
             tools:text="British Pound"
-            android:textSize="14sp"
+            android:textSize="@dimen/text_size_currency_name"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:id="@+id/textView_currency_full_text"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="@dimen/margin_default"
             app:layout_constraintStart_toEndOf="@+id/imageView_country_flag"
             app:layout_constraintBottom_toBottomOf="@+id/imageView_country_flag"
             app:layout_constraintTop_toBottomOf="@+id/textView_currency_code"
             app:layout_constraintEnd_toStartOf="@+id/guideline"
-            android:layout_marginEnd="8dp"/>
+            android:layout_marginEnd="@dimen/margin_small"/>
 
     <EditText
             android:layout_width="0dp"
@@ -52,14 +52,14 @@
             android:gravity="end"
             android:id="@+id/editText_rate"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginEnd="16dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginEnd="@dimen/margin_default"
+            android:layout_marginTop="@dimen/margin_small"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_marginBottom="8dp"
-            android:layout_marginStart="8dp"
+            android:layout_marginBottom="@dimen/margin_small"
+            android:layout_marginStart="@dimen/margin_small"
             app:layout_constraintStart_toStartOf="@+id/guideline"
-            android:textSize="24sp"/>
+            android:textSize="@dimen/text_size_rate"/>
     <android.support.constraint.Guideline
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
