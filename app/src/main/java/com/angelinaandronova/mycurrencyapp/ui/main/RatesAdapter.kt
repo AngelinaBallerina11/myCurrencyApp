@@ -8,6 +8,7 @@ import android.support.v4.app.FragmentActivity
 import android.support.v7.widget.RecyclerView
 import android.text.Editable
 import android.text.TextWatcher
+import android.text.method.KeyListener
 import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
@@ -42,6 +43,7 @@ class RatesAdapter(val context: Context, val items: ArrayList<CurrencyData>, val
     private var viewModel: MainViewModel
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
+    private lateinit var keyListener: KeyListener
 
     init {
         MyApplication.component.inject(this)
@@ -50,10 +52,12 @@ class RatesAdapter(val context: Context, val items: ArrayList<CurrencyData>, val
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RatesViewHolder {
-        return RatesViewHolder(
+        val view = RatesViewHolder(
             LayoutInflater.from(context)
                 .inflate(R.layout.list_item_currency, parent, false)
         )
+        keyListener = view.rate.keyListener
+        return view
     }
 
     override fun getItemCount(): Int = items.size
@@ -85,6 +89,7 @@ class RatesAdapter(val context: Context, val items: ArrayList<CurrencyData>, val
             holder.rate.isClickable = true
             holder.rate.isFocusable = true
             holder.rate.isFocusableInTouchMode = true
+            holder.rate.keyListener = keyListener
             holder.rate.requestFocus()
             holder.rate.setSelection(holder.rate.text.length)
             holder.rate.addTextChangedListener(textWatcher)
@@ -117,11 +122,13 @@ class RatesAdapter(val context: Context, val items: ArrayList<CurrencyData>, val
             }
         } else {
             holder.rate.isCursorVisible = false
-            holder.rate.isClickable = false
+            holder.rate.isClickable = true
             holder.rate.isFocusable = false
             holder.rate.isFocusableInTouchMode = false
+            holder.rate.setOnClickListener { holder.container.performClick() }
             holder.rate.removeTextChangedListener(textWatcher)
             holder.rate.onFocusChangeListener = null
+            holder.rate.keyListener = null
         }
     }
 
