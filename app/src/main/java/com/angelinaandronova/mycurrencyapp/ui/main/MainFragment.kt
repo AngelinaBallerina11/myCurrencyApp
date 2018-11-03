@@ -45,7 +45,7 @@ class MainFragment : Fragment(), RatesClickListener {
 
         viewModel.currencyData.observe(this, android.arch.lifecycle.Observer { currencies ->
             currencies?.let {
-                progress_bar.visibility = View.GONE
+                updateViewsVisibilityLoaded()
                 if (recyclerview.visibility == View.GONE) recyclerview.visibility = View.VISIBLE
                 adapter?.run {
                     when {
@@ -60,7 +60,6 @@ class MainFragment : Fragment(), RatesClickListener {
                 when (it) {
                     is UnknownHostException -> {
                         showSnackBar()
-                        recyclerview.visibility = View.GONE
                     }
                     else -> Toast.makeText(activity, it.localizedMessage, Toast.LENGTH_LONG).show()
                 }
@@ -69,7 +68,7 @@ class MainFragment : Fragment(), RatesClickListener {
     }
 
     private fun fetchData() {
-        progress_bar.visibility = View.VISIBLE
+        updateViewsVisibilityLoading()
         if (isOnline()) {
             viewModel.startFetchingRates()
         } else {
@@ -85,15 +84,32 @@ class MainFragment : Fragment(), RatesClickListener {
 
     private fun showSnackBar() {
         if (isAdded) {
-            progress_bar.visibility = View.GONE
+            updateViewsVisibilityNoConnection()
             Snackbar.make(main, activity!!.resources.getString(R.string.no_internet_connection), Snackbar.LENGTH_INDEFINITE)
                 .setAction(activity!!.resources.getString(R.string.retry)) { fetchData() }
                 .show()
         }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    private fun updateViewsVisibilityNoConnection() {
+        progress_bar.visibility = View.GONE
+        recyclerview.visibility = View.GONE
+        no_connection_image.visibility = View.VISIBLE
+    }
+
+    private fun updateViewsVisibilityLoading() {
         progress_bar.visibility = View.VISIBLE
+        recyclerview.visibility = View.GONE
+        no_connection_image.visibility = View.GONE
+    }
+
+    private fun updateViewsVisibilityLoaded() {
+        progress_bar.visibility = View.GONE
+        recyclerview.visibility = View.VISIBLE
+        no_connection_image.visibility = View.GONE
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         adapter = RatesAdapter(activity!!, viewModel.items, this)
         recyclerview.adapter = adapter
         recyclerview.layoutManager = LinearLayoutManager(activity)
