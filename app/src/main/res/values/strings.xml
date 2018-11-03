@@ -33,4 +33,6 @@
     <string name="TRY">Turkish lira</string>
     <string name="USD">United State Dollar</string>
     <string name="ZAR">South African rand</string>
+    <string name="no_internet_connection">No internet connection</string>
+    <string name="retry">RETRY</string>
 </resources>

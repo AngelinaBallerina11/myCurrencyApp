@@ -1,7 +1,10 @@
 package com.angelinaandronova.mycurrencyapp.ui.main
 
 import android.arch.lifecycle.ViewModelProviders
+import android.content.Context
+import android.net.ConnectivityManager
 import android.os.Bundle
+import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
@@ -12,6 +15,7 @@ import com.angelinaandronova.mycurrencyapp.R
 import com.angelinaandronova.mycurrencyapp.di.modules.ViewModelFactory
 import kotlinx.android.synthetic.main.main_fragment.*
 import javax.inject.Inject
+
 
 class MainFragment : Fragment(), RatesClickListener {
 
@@ -35,6 +39,7 @@ class MainFragment : Fragment(), RatesClickListener {
         super.onCreate(savedInstanceState)
         MyApplication.component.inject(this)
         viewModel = ViewModelProviders.of(activity!!, viewModelFactory).get(MainViewModel::class.java)
+
         viewModel.currencyData.observe(this, android.arch.lifecycle.Observer { currencies ->
             currencies?.let {
                 progress_bar.visibility = View.GONE
@@ -48,11 +53,36 @@ class MainFragment : Fragment(), RatesClickListener {
         })
     }
 
+    private fun fetchData() {
+        progress_bar.visibility = View.VISIBLE
+        if (isOnline()) {
+            viewModel.startFetchingRates()
+        } else {
+            showSnackBar()
+        }
+    }
+
+    private fun isOnline(): Boolean {
+        val cm = context?.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val netInfo = cm.activeNetworkInfo
+        return netInfo != null && netInfo.isConnectedOrConnecting
+    }
+
+    private fun showSnackBar() {
+        if (isAdded) {
+            progress_bar.visibility = View.GONE
+            Snackbar.make(main, activity!!.resources.getString(R.string.no_internet_connection), Snackbar.LENGTH_INDEFINITE)
+                .setAction(activity!!.resources.getString(R.string.retry)) { fetchData() }
+                .show()
+        }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         progress_bar.visibility = View.VISIBLE
         adapter = RatesAdapter(activity!!, viewModel.items, this)
         recyclerview.adapter = adapter
         recyclerview.layoutManager = LinearLayoutManager(activity)
+        fetchData()
     }
 
     override fun onItemClicked() {

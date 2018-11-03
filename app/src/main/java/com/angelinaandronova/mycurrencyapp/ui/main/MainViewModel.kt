@@ -15,7 +15,7 @@ class MainViewModel @Inject constructor(private val mainRepo: MainRepository) : 
 
     val currencyData = MutableLiveData<ArrayList<CurrencyData>>()
 
-    init {
+    fun startFetchingRates() {
         Observable
             .interval(1, TimeUnit.SECONDS)
             .timeInterval()
