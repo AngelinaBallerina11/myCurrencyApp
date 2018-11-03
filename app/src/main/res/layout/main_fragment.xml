@@ -24,10 +24,10 @@
             android:indeterminate="true"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="@+id/recyclerview"
+            app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginEnd="@dimen/margin_small"
             android:layout_marginBottom="@dimen/margin_small"
-            app:layout_constraintBottom_toBottomOf="@+id/recyclerview"
+            app:layout_constraintBottom_toBottomOf="parent"
             android:id="@+id/progress_bar"/>
 
 </android.support.constraint.ConstraintLayout>

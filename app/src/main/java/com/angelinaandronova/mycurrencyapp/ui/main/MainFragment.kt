@@ -1,5 +1,6 @@
 package com.angelinaandronova.mycurrencyapp.ui.main
 
+import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.net.ConnectivityManager
@@ -10,10 +11,12 @@ import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import com.angelinaandronova.mycurrencyapp.MyApplication
 import com.angelinaandronova.mycurrencyapp.R
 import com.angelinaandronova.mycurrencyapp.di.modules.ViewModelFactory
 import kotlinx.android.synthetic.main.main_fragment.*
+import java.net.UnknownHostException
 import javax.inject.Inject
 
 
@@ -43,11 +46,23 @@ class MainFragment : Fragment(), RatesClickListener {
         viewModel.currencyData.observe(this, android.arch.lifecycle.Observer { currencies ->
             currencies?.let {
                 progress_bar.visibility = View.GONE
+                if (recyclerview.visibility == View.GONE) recyclerview.visibility = View.VISIBLE
                 adapter?.run {
                     when {
                         items.isEmpty() && viewModel.items.isEmpty() -> addInitialSet(it)
                         !viewModel.editMode -> addRates(it)
                     }
+                }
+            }
+        })
+        viewModel.error.observe(this, Observer { error ->
+            error?.let {
+                when (it) {
+                    is UnknownHostException -> {
+                        showSnackBar()
+                        recyclerview.visibility = View.GONE
+                    }
+                    else -> Toast.makeText(activity, it.localizedMessage, Toast.LENGTH_LONG).show()
                 }
             }
         })
