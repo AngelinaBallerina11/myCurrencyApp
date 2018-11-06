@@ -33,7 +33,7 @@ class MainViewModel @Inject constructor(private val mainRepo: MainRepository) : 
         mainRepo.getExchangeRates()
             .subscribeOn(Schedulers.computation())
             .observeOn(Schedulers.computation())
-            .map { it.rates.getListOfCurrencyData() }
+            .map { it.transformMaptoList() }
             .subscribeOn(Schedulers.io())
             .observeOn(Schedulers.computation())
             .subscribeBy(
