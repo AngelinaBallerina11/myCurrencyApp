@@ -35,4 +35,5 @@
     <string name="ZAR">South African rand</string>
     <string name="no_internet_connection">No internet connection</string>
     <string name="retry">RETRY</string>
+    <string name="something_went_wrong">Sorry! Something went wrong</string>
 </resources>

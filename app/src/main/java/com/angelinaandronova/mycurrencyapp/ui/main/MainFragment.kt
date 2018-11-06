@@ -61,7 +61,7 @@ class MainFragment : Fragment(), RatesClickListener {
                     is UnknownHostException -> {
                         showSnackBar()
                     }
-                    else -> Toast.makeText(activity, it.localizedMessage, Toast.LENGTH_LONG).show()
+                    else -> Toast.makeText(activity, resources.getString(R.string.something_went_wrong), Toast.LENGTH_LONG).show()
                 }
             }
         })
